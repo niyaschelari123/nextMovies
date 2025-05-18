@@ -1,5 +1,5 @@
 import connectMongoDB from "@/libs/mongodb";
-import Topic from "@/models/topic";
+import Wishlist from "@/models/wishlist";
 import { NextResponse } from "next/server";
 
 export async function OPTIONS() {
@@ -19,10 +19,10 @@ export async function POST(request) {
     console.log("Data received:", data);
 
     await connectMongoDB();
-    await Topic.create(data);
+    await Wishlist.create(data);
 
     return NextResponse.json(
-      { message: "Topic Created" },
+      { message: "Added Show to Wishlist" },
       {
         status: 201,
         headers: {
@@ -42,43 +42,24 @@ export async function POST(request) {
 export async function GET(request) {
   await connectMongoDB();
 
+  // Extract 'type' from query parameters
   const { searchParams } = new URL(request.url);
   const type = searchParams.get("type");
-  const page = parseInt(searchParams.get("page") || "1", 10);
-  const limit = parseInt(searchParams.get("limit") || "18", 10);
-  const skip = (page - 1) * limit;
-  const sortByDate = searchParams.get("sortByDate") === "true";
-  const search = searchParams.get("search");
 
-  // Base query
-  const query = {};
-  if (type) query.type = type;
+  let topics;
 
-  // Add search filter if present (case insensitive regex match on name)
-  if (search) {
-    query.name = { $regex: search, $options: "i" };
+  if (type) {
+    topics = await Wishlist.find({ type }); // Filter by type
+  } else {
+    topics = await Wishlist.find(); // Return all if no type is specified
   }
 
-  const sortOption = sortByDate ? { watchedDate: -1 } : {};
-
-  const [topics, total] = await Promise.all([
-    Topic.find(query)
-      .sort(sortOption)
-      .skip(skip)
-      .limit(limit),
-    Topic.countDocuments(query),
-  ]);
-
-  const totalPages = Math.ceil(total / limit);
-
-  return NextResponse.json({ topics, totalPages, total });
+  return NextResponse.json({ topics });
 }
-
-
 
 export async function DELETE(request) {
   const id = request.nextUrl.searchParams.get("id");
   await connectMongoDB();
-  await Topic.findByIdAndDelete(id);
-  return NextResponse.json({ message: "Topic deleted" }, { status: 200 });
+  await Wishlist.findByIdAndDelete(id);
+  return NextResponse.json({ message: "Data deleted" }, { status: 200 });
 }

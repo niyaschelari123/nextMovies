@@ -39,7 +39,7 @@ const genreOptions = [
   "Experimental",
 ];
 
-export default function EditTopicForm({
+export default function EditWishlistForm({
   id,
   name,
   year,
@@ -47,7 +47,6 @@ export default function EditTopicForm({
   language,
   genre,
   image,
-  watchedDate,
 }) {
   const [newName, setNewName] = useState(name);
   const [newYear, setNewYear] = useState(year);
@@ -85,19 +84,7 @@ export default function EditTopicForm({
 
   const router = useRouter();
 
-  useEffect(() => {
-    if (watchedDate) {
-      setWatchedDateOption("chooseDate");
 
-      // Convert "DD/MM/YYYY, hh:mm:ss a" → datetime-local format
-      const parsed = dayjs(watchedDate, "DD/MM/YYYY, hh:mm:ss a");
-      if (parsed.isValid()) {
-        setWatchedDateInput(parsed.format("YYYY-MM-DDTHH:mm"));
-      }
-    } else {
-      setWatchedDateOption("dontRemember");
-    }
-  }, [watchedDate]);
 
   const handleGenreChange = (value) => {
     setNewGenre((prev) =>
@@ -112,13 +99,13 @@ export default function EditTopicForm({
     if (watchedDateOption === "dontRemember") {
       formattedWatchedDate = undefined;
     } else if (watchedDateOption === "today") {
-      formattedWatchedDate = dayjs().format("YYYY-MM-DDTHH:mm");
+      formattedWatchedDate = dayjs().format("DD/MM/YYYY, hh:mm:ss a");
     } else if (watchedDateOption === "chooseDate" && watchedDateInput) {
-      formattedWatchedDate = watchedDateInput;
+      formattedWatchedDate = dayjs(watchedDateInput).format("DD/MM/YYYY, hh:mm:ss a");
     }
 
     try {
-      const res = await fetch(`http://localhost:3000/api/topics/${id}`, {
+      const res = await fetch(`http://localhost:3000/api/wishlist/${id}`, {
         method: "PUT",
         headers: {
           "Content-type": "application/json",
@@ -130,7 +117,6 @@ export default function EditTopicForm({
           language: newLanguage,
           genre: newGenre,
           image: newImage,
-          watchedDate: formattedWatchedDate,
         }),
       });
 
@@ -139,7 +125,7 @@ export default function EditTopicForm({
       }
 
       router.refresh();
-      router.push("/");
+      router.push("/wishlist");
     } catch (error) {
       console.error(error);
     }
@@ -151,7 +137,7 @@ export default function EditTopicForm({
       className="max-w-xl mx-auto p-6 bg-white rounded-xl shadow-md flex flex-col gap-4"
     >
       <h2 className="text-2xl font-bold text-center text-gray-800">
-        Edit Movie
+        Edit Show
       </h2>
 
       <input
@@ -219,54 +205,6 @@ export default function EditTopicForm({
         type="text"
         placeholder="Image URL"
       />
-
-      {/* Watched Date Section */}
-      <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-        <p className="font-semibold text-gray-700 mb-2">Watched Date</p>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <label className="flex items-center gap-2">
-            <input
-              type="radio"
-              name="watchedDate"
-              value="dontRemember"
-              checked={watchedDateOption === "dontRemember"}
-              onChange={() => setWatchedDateOption("dontRemember")}
-            />
-            Don't Remember
-          </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="radio"
-              name="watchedDate"
-              value="today"
-              checked={watchedDateOption === "today"}
-              onChange={() => setWatchedDateOption("today")}
-            />
-            Today
-          </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="radio"
-              name="watchedDate"
-              value="chooseDate"
-              checked={watchedDateOption === "chooseDate"}
-              onChange={() => setWatchedDateOption("chooseDate")}
-            />
-            Choose Date
-          </label>
-        </div>
-
-        {watchedDateOption === "chooseDate" && (
-          <div className="mt-3">
-            <input
-              type="datetime-local"
-              value={watchedDateInput}
-              onChange={(e) => setWatchedDateInput(e.target.value)}
-              className="w-full sm:w-auto border border-gray-300 rounded px-4 py-2"
-            />
-          </div>
-        )}
-      </div>
 
       <button
         type="submit"

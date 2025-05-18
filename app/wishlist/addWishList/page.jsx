@@ -68,7 +68,7 @@ const genres = [
   { genre_id: 37, name: "Western" },
 ];
 
-export default function AddTopic() {
+export default function Wishlist() {
   const [name, setName] = useState("");
   const [year, setYear] = useState("");
   const [type, setType] = useState(typeOptions[0]);
@@ -114,8 +114,6 @@ export default function AddTopic() {
     fetchLanguages();
   }, []);
 
-  console.log('watched date option', watchedDate)
-
   const router = useRouter();
 
   const handleGenreChange = (value) => {
@@ -132,24 +130,21 @@ export default function AddTopic() {
       return;
     }
 
-
     let formattedWatchedDate;
     if (watchedDateOption === "dontRemember") {
       formattedWatchedDate = undefined;
     } else if (watchedDateOption === "today") {
-      formattedWatchedDate = dayjs().format("YYYY-MM-DDTHH:mm");
+      formattedWatchedDate = dayjs().format("DD/MM/YYYY, hh:mm:ss a");
     } else if (watchedDateOption === "chooseDate" && watchedDate) {
-      // formattedWatchedDate = dayjs(watchedDate).format(
-      //   "DD/MM/YYYY, hh:mm:ss a"
-      // );
-
-      formattedWatchedDate = watchedDate
+      formattedWatchedDate = dayjs(watchedDate).format(
+        "DD/MM/YYYY, hh:mm:ss a"
+      );
     }
 
     try {
       if (!override) {
         const checkRes = await fetch(
-          `http://localhost:3000/api/topics/check?name=${encodeURIComponent(
+          `http://localhost:3000/api/wishlist/check?name=${encodeURIComponent(
             name
           )}&year=${year}`
         );
@@ -162,7 +157,7 @@ export default function AddTopic() {
         }
       }
 
-      const res = await fetch("http://localhost:3000/api/topics", {
+      const res = await fetch("http://localhost:3000/api/wishlist", {
         method: "POST",
         headers: { "Content-type": "application/json" },
         body: JSON.stringify({
@@ -172,7 +167,7 @@ export default function AddTopic() {
           language,
           genre,
           image,
-          watchedDate: formattedWatchedDate,
+          // watchedDate: formattedWatchedDate,
         }),
       });
 
@@ -228,11 +223,11 @@ export default function AddTopic() {
       language: selectedCard?.original_language,
       type: type.toLowerCase(),
       image: `https://image.tmdb.org/t/p/original${selectedCard?.poster_path}`,
-      watchedDate: formattedWatchedDate ? formattedWatchedDate : null,
+      // watchedDate: formattedWatchedDate ? formattedWatchedDate : null,
     };
 
     try {
-      const res = await fetch("http://localhost:3000/api/topics", {
+      const res = await fetch("http://localhost:3000/api/wishlist", {
         method: "POST",
         headers: { "Content-type": "application/json" },
         body: JSON.stringify(values),
@@ -329,7 +324,7 @@ export default function AddTopic() {
               <button
                 onClick={() => {
                   setShowModal(false);
-                  setShowDateModal(true); // Open the date selection modal
+                  handleSubmitFound(e,true) // Open the date selection modal
                 }}
                 className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
               >
@@ -340,63 +335,7 @@ export default function AddTopic() {
         </div>
       )}
 
-      {showDateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999]">
-          <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-lg">
-            <h3 className="text-xl font-bold mb-4 text-blue-600">
-              Select Watched Date
-            </h3>
-
-            <div className="flex flex-col sm:flex-row gap-3 mb-4">
-              {["dontRemember", "today", "chooseDate"].map((opt) => (
-                <label key={opt} className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="watchedDate"
-                    value={opt}
-                    checked={watchedDateOption === opt}
-                    onChange={() => setWatchedDateOption(opt)}
-                  />
-                  {opt === "dontRemember"
-                    ? "Don't Remember"
-                    : opt === "today"
-                    ? "Today"
-                    : "Choose Date"}
-                </label>
-              ))}
-            </div>
-
-            {watchedDateOption === "chooseDate" && (
-              <div className="mt-3">
-                <input
-                  type="datetime-local"
-                  value={watchedDate}
-                  onChange={(e) => setWatchedDate(e.target.value)}
-                  className="w-full sm:w-auto border border-gray-300 rounded px-4 py-2"
-                />
-              </div>
-            )}
-
-            <div className="flex justify-end gap-4 mt-6">
-              <button
-                onClick={() => setShowDateModal(false)}
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={(e) => {
-                  setShowDateModal(false);
-                  handleSubmitFound(e, true); // Submit movie with date selection
-                }}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                Add Movie
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+    
 
       {/* Main Form */}
       <form
@@ -404,7 +343,7 @@ export default function AddTopic() {
         className="max-w-xl mx-auto p-6 bg-white rounded-xl shadow-md flex flex-col gap-4"
       >
         <h2 className="text-2xl font-bold text-center text-gray-800">
-          Add New Movie
+          Add to Wishlist
         </h2>
 
         <input
@@ -489,40 +428,6 @@ export default function AddTopic() {
           placeholder="Image URL"
         />
 
-        {/* Watched Date Section */}
-        <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-          <p className="font-semibold text-gray-700 mb-2">Watched Date</p>
-          <div className="flex flex-col sm:flex-row gap-3">
-            {["dontRemember", "today", "chooseDate"].map((opt) => (
-              <label key={opt} className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="watchedDate"
-                  value={opt}
-                  checked={watchedDateOption === opt}
-                  onChange={() => setWatchedDateOption(opt)}
-                />
-                {opt === "dontRemember"
-                  ? "Don't Remember"
-                  : opt === "today"
-                  ? "Today"
-                  : "Choose Date"}
-              </label>
-            ))}
-          </div>
-
-          {watchedDateOption === "chooseDate" && (
-            <div className="mt-3">
-              <input
-                type="datetime-local"
-                value={watchedDate}
-                onChange={(e) => setWatchedDate(e.target.value)}
-                className="w-full sm:w-auto border border-gray-300 rounded px-4 py-2"
-              />
-            </div>
-          )}
-        </div>
-
         <button
           type="submit"
           className="bg-green-600 text-white font-bold py-3 px-6 rounded hover:bg-green-700 transition w-fit mx-auto"
@@ -566,7 +471,7 @@ export default function AddTopic() {
                           onClick={async () => {
                             setSelectedCard(movie);
                             const checkRes = await fetch(
-                              `http://localhost:3000/api/topics/check?name=${encodeURIComponent(
+                              `http://localhost:3000/api/wishlist/check?name=${encodeURIComponent(
                                 name
                               )}&year=${year}`
                             );
@@ -589,42 +494,7 @@ export default function AddTopic() {
                         </button>
                       ) : (
                         <div className="space-y-2">
-                          <div className="flex flex-wrap gap-4 text-sm">
-                            {["dontRemember", "today", "chooseDate"].map(
-                              (opt) => (
-                                <label
-                                  key={opt}
-                                  className="flex items-center gap-2"
-                                >
-                                  <input
-                                    type="radio"
-                                    name="watchedDateFound"
-                                    value={opt}
-                                    checked={watchedOptionForFound === opt}
-                                    onChange={() =>
-                                      setWatchedOptionForFound(opt)
-                                    }
-                                  />
-                                  {opt === "dontRemember"
-                                    ? "Don't Remember"
-                                    : opt === "today"
-                                    ? "Today"
-                                    : "Choose Date"}
-                                </label>
-                              )
-                            )}
-                          </div>
-
-                          {watchedOptionForFound === "chooseDate" && (
-                            <input
-                              type="datetime-local"
-                              value={watchedDateForFound}
-                              onChange={(e) =>
-                                setWatchedDateForFound(e.target.value)
-                              }
-                              className="border border-gray-300 rounded px-2 py-1 text-sm w-full sm:w-auto"
-                            />
-                          )}
+                      
 
                           <button
                             onClick={async () => {
@@ -636,10 +506,12 @@ export default function AddTopic() {
                                 watchedOptionForFound === "dontRemember"
                                   ? undefined
                                   : watchedOptionForFound === "today"
-                                  ? dayjs().format("YYYY-MM-DDTHH:mm")
+                                  ? dayjs().format("DD/MM/YYYY, hh:mm:ss a")
                                   : watchedOptionForFound === "chooseDate" &&
                                     watchedDateForFound
-                                  ? watchedDateForFound
+                                  ? dayjs(watchedDateForFound).format(
+                                      "DD/MM/YYYY, hh:mm:ss a"
+                                    )
                                   : undefined;
 
                               console.log(
@@ -665,13 +537,10 @@ export default function AddTopic() {
                                 language: movie.original_language,
                                 type: type.toLowerCase(),
                                 image: `https://image.tmdb.org/t/p/original${movie.poster_path}`,
-                                watchedDate: formattedWatchedDate
-                                  ? formattedWatchedDate
-                                  : null,
                               };
 
                               try {
-                                const res = await fetch("/api/topics", {
+                                const res = await fetch("/api/wishlist", {
                                   method: "POST",
                                   headers: {
                                     "Content-type": "application/json",

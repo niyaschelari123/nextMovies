@@ -1,20 +1,19 @@
 import mongoose, { Schema } from "mongoose";
 
-const topicSchema = new Schema(
+const wishlistSchema = new Schema(
   {
     name: String,
-    year: Number,
+    year: String,
     type: String,
     language: String,
     genre: Array,
     image: String,
-    watchedDate: String,
   },
   {
     timestamps: true,
   }
 );
 
-const Topic = mongoose.models.Topic || mongoose.model("Topic", topicSchema);
+const Wishlist = mongoose.models.Wishlist || mongoose.model("Wishlist", wishlistSchema);
 
-export default Topic;
+export default Wishlist;
