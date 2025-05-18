@@ -232,7 +232,7 @@ export default function EditTopicForm({
               checked={watchedDateOption === "dontRemember"}
               onChange={() => setWatchedDateOption("dontRemember")}
             />
-            Don't Remember
+            Dont Remember
           </label>
           <label className="flex items-center gap-2">
             <input
