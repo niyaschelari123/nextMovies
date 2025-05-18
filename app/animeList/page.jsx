@@ -122,13 +122,16 @@ const AnimePage = () => {
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <Link
-                    href={`/editTopic/${t._id}`}
-                    className="text-blue-600 hover:text-blue-800 transition"
-                  >
-                    <HiPencilAlt size={22} />
+                  <Link href={`/editTopic/${t._id}`}>
+                    <a className="text-blue-600 hover:text-blue-800 transition">
+                      <HiPencilAlt size={22} />
+                    </a>
                   </Link>
-                  <RemoveBtn id={t._id} fetchMovies={() => fetchMovies(search)} />
+
+                  <RemoveBtn
+                    id={t._id}
+                    fetchMovies={() => fetchMovies(search)}
+                  />
                 </div>
               </div>
             </div>
