@@ -3,13 +3,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { HiPencilAlt } from "react-icons/hi";
-import RemoveBtn from "@/components/RemoveBtn"; // Adjust if needed
+import RemoveBtn from "@/components/RemoveBtn"; // Adjust if needed]
+import { useRouter } from "next/navigation";
 
 const AnimePage = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const searchTimeoutRef = useRef(null);
+  const router = useRouter();
 
   const fetchMovies = async (searchTerm = "") => {
     setLoading(true);
@@ -122,11 +124,9 @@ const AnimePage = () => {
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <Link href={`/editTopic/${t._id}`}>
-                    <a className="text-blue-600 hover:text-blue-800 transition">
-                      <HiPencilAlt size={22} />
-                    </a>
-                  </Link>
+                  <button onClick={() => router.push(`/editTopic/${id}`)}>
+                    <HiPencilAlt size={22} />
+                  </button>
 
                   <RemoveBtn
                     id={t._id}
