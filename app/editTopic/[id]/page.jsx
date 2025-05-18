@@ -1,4 +1,6 @@
+'use client'
 import EditTopicForm from "@/components/EditTopicForm";
+import { useEffect } from "react";
 
 const getTopicById = async (id) => {
   try {
@@ -20,6 +22,7 @@ export default async function EditTopic({ params }) {
   const { id } = params;
   const { topic } = await getTopicById(id);
   const { name, year, type, language, genre, image, watchedDate } = topic;
+
 
   return (
     <EditTopicForm

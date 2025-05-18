@@ -48,6 +48,7 @@ export default function EditTopicForm({
   genre,
   image,
   watchedDate,
+  onClose
 }) {
   const [newName, setNewName] = useState(name);
   const [newYear, setNewYear] = useState(year);
@@ -140,6 +141,7 @@ export default function EditTopicForm({
 
       router.refresh();
       router.push("/");
+      onClose()
     } catch (error) {
       console.error(error);
     }

@@ -9,9 +9,11 @@ import RemoveBtn from "./RemoveBtn";
 
 import "swiper/css";
 import "swiper/css/navigation";
+import EditTopicModal from "./EditTopicModal";
 
 const MovieCarousel = () => {
   const [movies, setMovies] = useState([]);
+  const [editId, setEditId] = useState(null);
 
   useEffect(() => {
     fetch("/api/topics?type=movies")
@@ -71,18 +73,27 @@ const MovieCarousel = () => {
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <Link
+                  {/* <Link
                     href={`/editTopic/${t._id}`}
                     className="text-blue-600 hover:text-blue-800 transition"
                   >
                     <HiPencilAlt size={22} />
-                  </Link>
+                  </Link> */}
+                  <button
+                    onClick={() => setEditId(t?._id)}
+                    className="text-blue-600 hover:text-blue-800 transition"
+                  >
+                    <HiPencilAlt size={20} />
+                  </button>
                   <RemoveBtn id={t._id} />
                 </div>
               </div>
             </div>
           </SwiperSlide>
         ))}
+         {editId && (
+        <EditTopicModal id={editId} onClose={() => setEditId(null)} />
+      )}
       </Swiper>
     </div>
   );
