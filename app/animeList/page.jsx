@@ -5,6 +5,8 @@ import Link from "next/link";
 import { HiPencilAlt } from "react-icons/hi";
 import RemoveBtn from "@/components/RemoveBtn"; // Adjust if needed]
 import { useRouter } from "next/navigation";
+import EditTopicModal from "@/components/EditTopicModal";
+import { useModalContext } from "@/components/ModalContext";
 
 const AnimePage = () => {
   const [movies, setMovies] = useState([]);
@@ -12,6 +14,7 @@ const AnimePage = () => {
   const [search, setSearch] = useState("");
   const searchTimeoutRef = useRef(null);
   const router = useRouter();
+  const { isModalOpen, setIsModalOpen, editId, setEditId } = useModalContext();
 
   const fetchMovies = async (searchTerm = "") => {
     setLoading(true);
@@ -124,8 +127,12 @@ const AnimePage = () => {
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <button onClick={() => router.push(`/editTopic/${id}`)}>
-                    <HiPencilAlt size={22} />
+                 <button
+                    onClick={() => {
+                      setEditId(t?._id)}}
+                    className="text-blue-600 hover:text-blue-800 transition"
+                  >
+                    <HiPencilAlt size={20} />
                   </button>
 
                   <RemoveBtn
@@ -137,6 +144,9 @@ const AnimePage = () => {
             </div>
           ))}
         </div>
+      )}
+      {editId && (
+        <EditTopicModal id={editId} onClose={() => setEditId(null)} />
       )}
     </div>
   );

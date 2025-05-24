@@ -4,12 +4,15 @@ import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { HiPencilAlt } from "react-icons/hi";
 import RemoveBtn from "@/components/RemoveBtn";
+import EditTopicModal from "@/components/EditTopicModal";
+import { useModalContext } from "@/components/ModalContext";
 
 const SeriesPage = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const searchTimeoutRef = useRef(null);
+  const { isModalOpen, setIsModalOpen, editId, setEditId } = useModalContext();
 
   const fetchMovies = async (searchTerm = "") => {
     setLoading(true);
@@ -123,18 +126,28 @@ const SeriesPage = () => {
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <Link
+                  {/* <Link
                     href={`/editTopic/${t._id}`}
                     className="text-blue-600 hover:text-blue-800 transition"
                   >
                     <HiPencilAlt size={22} />
-                  </Link>
+                  </Link> */}
+                  <button
+                    onClick={() => {
+                      setEditId(t?._id)}}
+                    className="text-blue-600 hover:text-blue-800 transition"
+                  >
+                    <HiPencilAlt size={20} />
+                  </button>
                   <RemoveBtn id={t._id} fetchMovies={() => fetchMovies(search)} />
                 </div>
               </div>
             </div>
           ))}
         </div>
+      )}
+      {editId && (
+        <EditTopicModal id={editId} onClose={() => setEditId(null)} />
       )}
     </div>
   );

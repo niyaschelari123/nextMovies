@@ -10,10 +10,12 @@ import RemoveBtn from "./RemoveBtn";
 import "swiper/css";
 import "swiper/css/navigation";
 import EditTopicModal from "./EditTopicModal";
+import { useModalContext } from "./ModalContext";
 
 const MovieCarousel = () => {
   const [movies, setMovies] = useState([]);
-  const [editId, setEditId] = useState(null);
+  // const [editId, setEditId] = useState(null);
+  const { isModalOpen, setIsModalOpen, editId, setEditId } = useModalContext();
 
   useEffect(() => {
     fetch("/api/topics?type=movies")
@@ -80,7 +82,8 @@ const MovieCarousel = () => {
                     <HiPencilAlt size={22} />
                   </Link> */}
                   <button
-                    onClick={() => setEditId(t?._id)}
+                    onClick={() => {
+                      setEditId(t?._id)}}
                     className="text-blue-600 hover:text-blue-800 transition"
                   >
                     <HiPencilAlt size={20} />
@@ -91,9 +94,9 @@ const MovieCarousel = () => {
             </div>
           </SwiperSlide>
         ))}
-         {editId && (
+         {/* {editId && (
         <EditTopicModal id={editId} onClose={() => setEditId(null)} />
-      )}
+      )} */}
       </Swiper>
     </div>
   );

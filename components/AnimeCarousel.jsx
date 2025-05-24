@@ -9,9 +9,11 @@ import { Autoplay, Navigation } from "swiper/modules";
 import RemoveBtn from "./RemoveBtn"; // make sure this exists
 import "swiper/css";
 import "swiper/css/navigation";
+import { useModalContext } from "./ModalContext";
 
 const AnimeCarousel = () => {
   const [animes, setAnimes] = useState([]);
+  const { isModalOpen, setIsModalOpen, editId, setEditId } = useModalContext();
 
   useEffect(() => {
     fetch("/api/topics?type=anime")
@@ -70,12 +72,19 @@ const AnimeCarousel = () => {
                   )}
                 </div>
                 <div className="flex justify-between items-center mt-4">
-                  <Link
+                  {/* <Link
                     href={`/editTopic/${anime._id}`}
                     className="text-blue-600 hover:text-blue-800 transition"
                   >
                     <HiPencilAlt size={20} />
-                  </Link>
+                  </Link> */}
+                  <button
+                    onClick={() => {
+                      setEditId(anime?._id)}}
+                    className="text-blue-600 hover:text-blue-800 transition"
+                  >
+                    <HiPencilAlt size={20} />
+                  </button>
                   <RemoveBtn id={anime._id} />
                 </div>
               </div>

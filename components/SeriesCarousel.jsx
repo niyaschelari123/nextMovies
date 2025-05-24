@@ -9,9 +9,11 @@ import { Autoplay, Navigation } from "swiper/modules";
 
 import "swiper/css";
 import "swiper/css/navigation";
+import { useModalContext } from "./ModalContext";
 
 const SeriesCarousel = () => {
   const [series, setSeries] = useState([]);
+  const { isModalOpen, setIsModalOpen, editId, setEditId } = useModalContext();
 
   useEffect(() => {
     fetch("/api/topics?type=series")
@@ -71,12 +73,20 @@ const SeriesCarousel = () => {
                 </div>
 
                 <div className="flex justify-between items-center mt-3">
-                  <Link
+                  {/* <Link
                     href={`/editTopic/${t._id}`}
                     className="text-blue-600 hover:text-blue-800 transition"
                   >
                     <HiPencilAlt size={20} />
-                  </Link>
+                  </Link> */}
+                  <button
+                    onClick={() => {
+                      setEditId(t?._id);
+                    }}
+                    className="text-blue-600 hover:text-blue-800 transition"
+                  >
+                    <HiPencilAlt size={20} />
+                  </button>
                   <RemoveBtn id={t._id} />
                 </div>
               </div>

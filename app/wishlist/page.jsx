@@ -5,6 +5,8 @@ import Link from "next/link";
 import { HiPencilAlt } from "react-icons/hi";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import RemoveBtn from "@/components/RemoveBtn";
+import { createContext, useContext } from 'react';
+
 
 const TABS = ["Movies", "Series", "Anime", "Documentary"];
 
@@ -28,7 +30,9 @@ const MoviesPage = () => {
     fetchMovies();
   }, [activeTab]);
 
+
   return (
+
     <div className="w-full mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
         <h1 className="text-3xl font-bold">Wishlist</h1>
@@ -126,6 +130,7 @@ const MoviesPage = () => {
         </div>
       )}
     </div>
+
   );
 };
 

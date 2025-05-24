@@ -4,12 +4,15 @@ import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { HiPencilAlt } from "react-icons/hi";
 import RemoveBtn from "@/components/RemoveBtn";
+import EditTopicModal from "@/components/EditTopicModal";
+import { useModalContext } from "@/components/ModalContext";
 
 const DocumentaryPage = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const searchTimeoutRef = useRef(null);
+  const { isModalOpen, setIsModalOpen, editId, setEditId } = useModalContext();
 
   const fetchMovies = async (searchTerm = "") => {
     setLoading(true);
@@ -132,6 +135,9 @@ const DocumentaryPage = () => {
             </div>
           ))}
         </div>
+      )}
+      {editId && (
+        <EditTopicModal id={editId} onClose={() => setEditId(null)} />
       )}
     </div>
   );
