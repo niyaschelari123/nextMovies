@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
+import { ListCollapse, ChevronDown, ChevronUp } from "lucide-react";
 
 const typeOptions = ["movies", "series", "anime", "documentary"];
 const languageOptions = ["English", "Hindi", "Spanish", "French", "Japanese"];
@@ -57,6 +58,7 @@ export default function EditWishlistForm({
   const [newGenre, setNewGenre] = useState(genre || []);
   const [newImage, setNewImage] = useState(image);
     const [languageArray, setLanguageArray] = useState([]);
+      const [open, setOpen] = useState(false);
 
   const fetchLanguages = async () => {
     const options = {
@@ -198,7 +200,7 @@ export default function EditWishlistForm({
               </option>
             ))}
       </select>
-      <div>
+      {/* <div>
         <p className="mb-2 font-medium">Select Genres:</p>
         <div className="flex flex-wrap gap-2">
           {genreOptions.map((g) => (
@@ -212,7 +214,38 @@ export default function EditWishlistForm({
             </label>
           ))}
         </div>
+      </div> */}
+       <div className="border rounded-md mb-4">
+      {/* Header */}
+      <div
+        className="flex justify-between items-center px-4 py-2 bg-slate-100 cursor-pointer"
+        onClick={() => setOpen(!open)}
+      >
+        <div className="flex items-center gap-2 font-medium">
+          <ListCollapse size={18} />
+          <span>Select Genres</span>
+        </div>
+        {open ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
       </div>
+
+      {/* Collapsible Genre List */}
+      {open && (
+        <div className="p-4">
+          <div className="flex flex-wrap gap-2">
+            {genreOptions.map((g) => (
+              <label key={g} className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={newGenre.includes(g)}
+                  onChange={() => handleGenreChange(g)}
+                />
+                <span>{g}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
 
       <input
         value={newImage}

@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import { database } from "@/firebase";
+import { ListCollapse, ChevronDown, ChevronUp } from "lucide-react";
 import {
   addDoc,
   collection,
@@ -119,6 +120,7 @@ export default function AddTopic() {
   const [foundMovies, setFoundMovies] = useState([]);
   const [languageArray, setLanguageArray] = useState([]);
   const [showDateModal, setShowDateModal] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const fetchLanguages = async () => {
     const options = {
@@ -537,7 +539,7 @@ export default function AddTopic() {
 
         {/* Genre Checkboxes */}
         <div>
-          <p className="mb-2 font-medium">Select Genres:</p>
+          {/* <p className="mb-2 font-medium">Select Genres:</p>
           <div className="flex flex-wrap gap-2">
             {genreOptions.map((g) => (
               <label key={g} className="flex items-center space-x-2">
@@ -549,7 +551,36 @@ export default function AddTopic() {
                 <span>{g}</span>
               </label>
             ))}
-          </div>
+          </div> */}
+          <div className="border rounded-md mb-4">
+      {/* Header */}
+      <div
+        className="flex justify-between items-center px-4 py-2 bg-slate-100 cursor-pointer"
+        onClick={() => setOpen(!open)}
+      >
+        <div className="flex items-center gap-2 font-medium">
+          <ListCollapse size={18} />
+          <span>Select Genres</span>
+        </div>
+        {open ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+      </div>
+
+      {/* Collapsible Content */}
+      {open && (
+        <div className="p-4 flex flex-wrap gap-2">
+          {genreOptions.map((g) => (
+            <label key={g} className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={genre.includes(g)}
+                onChange={() => handleGenreChange(g)}
+              />
+              <span>{g}</span>
+            </label>
+          ))}
+        </div>
+      )}
+    </div>
         </div>
 
         <input

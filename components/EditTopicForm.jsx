@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import { collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { database } from "@/firebase";
+import { ListCollapse, ChevronDown, ChevronUp } from "lucide-react";
 
 const typeOptions = ["movies", "series", "anime", "documentary"];
 const languageOptions = ["English", "Hindi", "Spanish", "French", "Japanese"];
@@ -52,6 +53,7 @@ function firebaseDate(input) {
   const minutes = String(date.getMinutes()).padStart(2, '0');
   const seconds = String(date.getSeconds()).padStart(2, '0');
 
+
   const ampm = hours >= 12 ? 'pm' : 'am';
   hours = hours % 12;
   hours = hours ? hours : 12; // Convert hour 0 to 12
@@ -79,6 +81,7 @@ export default function EditTopicForm({
   const [newGenre, setNewGenre] = useState(genre || []);
   const [newImage, setNewImage] = useState(image);
   const [languageArray, setLanguageArray] = useState([]);
+    const [open, setOpen] = useState(false);
 
   const fetchLanguages = async () => {
     const options = {
@@ -301,7 +304,7 @@ export default function EditTopicForm({
             </option>
           ))}
       </select>
-      <div>
+      {/* <div>
         <p className="mb-2 font-medium">Select Genres:</p>
         <div className="flex flex-wrap gap-2">
           {genreOptions.map((g) => (
@@ -315,7 +318,36 @@ export default function EditTopicForm({
             </label>
           ))}
         </div>
+      </div> */}
+      <div className="border rounded-md mb-4">
+      {/* Header */}
+      <div
+        className="flex justify-between items-center px-4 py-2 bg-slate-100 cursor-pointer"
+        onClick={() => setOpen(!open)}
+      >
+        <div className="flex items-center gap-2 font-medium">
+          <ListCollapse size={18} />
+          <span>Select Genres</span>
+        </div>
+        {open ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
       </div>
+
+      {/* Collapsible Content */}
+      {open && (
+        <div className="p-4 flex flex-wrap gap-2">
+          {genreOptions.map((g) => (
+            <label key={g} className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={newGenre.includes(g)}
+                onChange={() => handleGenreChange(g)}
+              />
+              <span>{g}</span>
+            </label>
+          ))}
+        </div>
+      )}
+    </div>
 
       <input
         value={newImage}
