@@ -143,6 +143,8 @@ const MoviesPage = () => {
                   <RemoveBtn
                     id={t._id}
                     fetchMovies={() => fetchMovies(search)}
+                    name={t.name}
+                    year={t.year}
                   />
                 </div>
               </div>

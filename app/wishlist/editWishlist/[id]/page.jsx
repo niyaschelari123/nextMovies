@@ -3,7 +3,7 @@ import EditWishlistForm from "./EditWishListForm";
 
 const getTopicById = async (id) => {
   try {
-    const res = await fetch(`http://localhost:3000/api/wishlist/${id}`, {
+    const res = await fetch(`/api/wishlist/${id}`, {
       cache: "no-store",
     });
 

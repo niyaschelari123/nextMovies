@@ -2,23 +2,45 @@ import connectMongoDB from "@/libs/mongodb";
 import Topic from "@/models/topic";
 import { NextResponse } from "next/server";
 
-// Shared CORS headers
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*", // Change to your domain in production
-  "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
-};
+// Allowed origins
+const ALLOWED_ORIGINS = [
+  "http://localhost:3000",
+  "https://next-movies-s97f.vercel.app",
+];
+
+// Generate CORS headers dynamically
+function getCORSHeaders(origin = "") {
+  const headers = {
+    "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+  };
+
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+  }
+
+  return headers;
+}
 
 // Handle preflight CORS requests
-export async function OPTIONS() {
+export async function OPTIONS(request) {
+  const origin = request.headers.get("origin") || "";
+  const headers = getCORSHeaders(origin);
+
   return new NextResponse(null, {
     status: 204,
-    headers: CORS_HEADERS,
+    headers,
   });
 }
 
 // POST: Create a new topic
 export async function POST(request) {
+  const origin = request.headers.get("origin") || "";
+  const headers = {
+    ...getCORSHeaders(origin),
+    "Content-Type": "application/json",
+  };
+
   try {
     const data = await request.json();
     console.log("Data received:", data);
@@ -30,10 +52,7 @@ export async function POST(request) {
       JSON.stringify({ message: "Topic Created" }),
       {
         status: 201,
-        headers: {
-          ...CORS_HEADERS,
-          "Content-Type": "application/json",
-        },
+        headers,
       }
     );
   } catch (error) {
@@ -42,7 +61,7 @@ export async function POST(request) {
       JSON.stringify({ message: "Internal Server Error", error: error.message }),
       {
         status: 500,
-        headers: CORS_HEADERS,
+        headers,
       }
     );
   }
@@ -50,6 +69,12 @@ export async function POST(request) {
 
 // GET: Get topics with optional filters
 export async function GET(request) {
+  const origin = request.headers.get("origin") || "";
+  const headers = {
+    ...getCORSHeaders(origin),
+    "Content-Type": "application/json",
+  };
+
   try {
     await connectMongoDB();
 
@@ -83,10 +108,7 @@ export async function GET(request) {
       JSON.stringify({ topics, totalPages, total }),
       {
         status: 200,
-        headers: {
-          ...CORS_HEADERS,
-          "Content-Type": "application/json",
-        },
+        headers,
       }
     );
   } catch (error) {
@@ -95,7 +117,7 @@ export async function GET(request) {
       JSON.stringify({ message: "Internal Server Error", error: error.message }),
       {
         status: 500,
-        headers: CORS_HEADERS,
+        headers,
       }
     );
   }
@@ -103,12 +125,18 @@ export async function GET(request) {
 
 // DELETE: Delete a topic by ID
 export async function DELETE(request) {
+  const origin = request.headers.get("origin") || "";
+  const headers = {
+    ...getCORSHeaders(origin),
+    "Content-Type": "application/json",
+  };
+
   try {
     const id = request.nextUrl.searchParams.get("id");
     if (!id) {
       return new NextResponse(
         JSON.stringify({ message: "Missing ID" }),
-        { status: 400, headers: CORS_HEADERS }
+        { status: 400, headers }
       );
     }
 
@@ -119,10 +147,7 @@ export async function DELETE(request) {
       JSON.stringify({ message: "Topic deleted" }),
       {
         status: 200,
-        headers: {
-          ...CORS_HEADERS,
-          "Content-Type": "application/json",
-        },
+        headers,
       }
     );
   } catch (error) {
@@ -131,7 +156,7 @@ export async function DELETE(request) {
       JSON.stringify({ message: "Internal Server Error", error: error.message }),
       {
         status: 500,
-        headers: CORS_HEADERS,
+        headers,
       }
     );
   }

@@ -5,13 +5,23 @@ import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import advancedFormat from "dayjs/plugin/advancedFormat";
+import { database } from "@/firebase";
+import {
+  addDoc,
+  collection,
+  query,
+  where,
+  deleteDoc,
+  doc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 
 dayjs.extend(customParseFormat);
 dayjs.extend(advancedFormat);
 
 const typeOptions = ["movies", "series", "anime", "documentary"];
 const languageOptions = ["English", "Hindi", "Spanish", "French", "Japanese"];
-
 
 const genreOptions = [
   "Action",
@@ -45,6 +55,25 @@ const genreOptions = [
   "Independent",
   "Experimental",
 ];
+
+function firebaseDate(input) {
+  const date = new Date(input);
+
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+  const year = date.getFullYear();
+
+  let hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+
+  const ampm = hours >= 12 ? "pm" : "am";
+  hours = hours % 12;
+  hours = hours ? hours : 12; // Convert hour 0 to 12
+  const formattedHours = String(hours).padStart(2, "0");
+
+  return `${day}/${month}/${year}, ${formattedHours}:${minutes}:${seconds} ${ampm}`;
+}
 
 const genres = [
   { genre_id: 28, name: "Action" },
@@ -114,7 +143,7 @@ export default function AddTopic() {
     fetchLanguages();
   }, []);
 
-  console.log('watched date option', watchedDate)
+  console.log("watched date option", watchedDate);
 
   const router = useRouter();
 
@@ -132,7 +161,6 @@ export default function AddTopic() {
       return;
     }
 
-
     let formattedWatchedDate;
     if (watchedDateOption === "dontRemember") {
       formattedWatchedDate = undefined;
@@ -143,7 +171,7 @@ export default function AddTopic() {
       //   "DD/MM/YYYY, hh:mm:ss a"
       // );
 
-      formattedWatchedDate = watchedDate
+      formattedWatchedDate = watchedDate;
     }
 
     try {
@@ -162,6 +190,31 @@ export default function AddTopic() {
         }
       }
 
+      const values = {
+        name: name.toLowerCase(),
+        year,
+        type,
+        language,
+        genre,
+        image,
+        watchedDate: formattedWatchedDate,
+      };
+
+      const fireBaseValues = {
+        ...values,
+        images: [values.image],
+        year: String(values?.year),
+        watchedDate:
+          values.watchedDate == null
+            ? "Dont Remember"
+            : firebaseDate(values?.watchedDate),
+        type: values.type == "Movies" ? "movies" : values?.type?.toLowerCase(),
+      };
+      const user_email = "niyaschelari@gmail.com";
+      const value = collection(database, `${user_email}_col`);
+
+      console.log("firebase values are", fireBaseValues);
+
       const res = await fetch("http://localhost:3000/api/topics", {
         method: "POST",
         headers: { "Content-type": "application/json" },
@@ -177,7 +230,9 @@ export default function AddTopic() {
       });
 
       if (res.ok) {
-        router.push("/");
+        await addDoc(value, fireBaseValues);
+        alert("Show Added Successfully");
+        router.push('/watchHistory');
       } else {
         throw new Error("Failed to add movie");
       }
@@ -215,7 +270,8 @@ export default function AddTopic() {
     }
 
     const values = {
-      name: selectedCard?.title.toLowerCase() || selectedCard?.name.toLowerCase(),
+      name:
+        selectedCard?.title.toLowerCase() || selectedCard?.name.toLowerCase(),
       year: selectedCard?.release_date
         ? selectedCard?.release_date.slice(0, 4)
         : selectedCard?.first_air_date?.slice(0, 4),
@@ -231,6 +287,21 @@ export default function AddTopic() {
       watchedDate: formattedWatchedDate ? formattedWatchedDate : null,
     };
 
+    const fireBaseValues = {
+      ...values,
+      images: [values.image],
+      year: String(values?.year),
+      watchedDate:
+        values.watchedDate == null
+          ? "Dont Remember"
+          : firebaseDate(values?.watchedDate),
+      type: values.type == "Movies" ? "movies" : values?.type?.toLowerCase(),
+    };
+    const user_email = "niyaschelari@gmail.com";
+    const value = collection(database, `${user_email}_col`);
+
+    console.log("firebase values are", fireBaseValues);
+
     try {
       const res = await fetch("http://localhost:3000/api/topics", {
         method: "POST",
@@ -239,7 +310,7 @@ export default function AddTopic() {
       });
 
       if (res.ok) {
-        router.push("/");
+        await addDoc(value, fireBaseValues);
       } else {
         throw new Error("Failed to add movie");
       }
@@ -670,6 +741,20 @@ export default function AddTopic() {
                                   : null,
                               };
 
+                              const fireBaseValues = {
+                                ...values,
+                                images: [values.image],
+                                year: String(values?.year),
+                                watchedDate:
+                                  values.watchedDate == null
+                                    ? "Dont Remember"
+                                    : firebaseDate(values?.watchedDate),
+                                type:
+                                  values.type == "Movies"
+                                    ? "movies"
+                                    : values?.type?.toLowerCase(),
+                              };
+
                               try {
                                 const res = await fetch("/api/topics", {
                                   method: "POST",
@@ -681,6 +766,13 @@ export default function AddTopic() {
 
                                 if (res.ok) {
                                   setFindModal(false);
+                                  const user_email = "niyaschelari@gmail.com";
+                                  const value = collection(
+                                    database,
+                                    `${user_email}_col`
+                                  );
+                                  await addDoc(value, fireBaseValues);
+                                  alert("enter");
                                   router.push("/");
                                 } else {
                                   throw new Error("Failed to add movie");

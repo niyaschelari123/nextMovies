@@ -22,23 +22,45 @@ import connectMongoDB from "@/libs/mongodb";
 import Topic from "@/models/topic";
 import { NextResponse } from "next/server";
 
-// Common CORS headers
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*", // Change "*" to your domain in production
-  "Access-Control-Allow-Methods": "GET, PUT, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
-};
+// Allowed origins
+const ALLOWED_ORIGINS = [
+  "http://localhost:3000",
+  "https://next-movies-s97f.vercel.app",
+];
+
+// Generate dynamic CORS headers
+function getCORSHeaders(origin = "") {
+  const headers = {
+    "Access-Control-Allow-Methods": "GET, PUT, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+  };
+
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+  }
+
+  return headers;
+}
 
 // Handle OPTIONS request for preflight
-export async function OPTIONS() {
+export async function OPTIONS(request) {
+  const origin = request.headers.get("origin") || "";
+  const headers = getCORSHeaders(origin);
+
   return new NextResponse(null, {
     status: 204,
-    headers: CORS_HEADERS,
+    headers,
   });
 }
 
 // PUT: Update topic
 export async function PUT(request, { params }) {
+  const origin = request.headers.get("origin") || "";
+  const headers = {
+    ...getCORSHeaders(origin),
+    "Content-Type": "application/json",
+  };
+
   try {
     const { id } = params;
     const data = await request.json();
@@ -50,10 +72,7 @@ export async function PUT(request, { params }) {
       JSON.stringify({ message: "Topic updated" }),
       {
         status: 200,
-        headers: {
-          ...CORS_HEADERS,
-          "Content-Type": "application/json",
-        },
+        headers,
       }
     );
   } catch (error) {
@@ -61,7 +80,7 @@ export async function PUT(request, { params }) {
       JSON.stringify({ error: error.message }),
       {
         status: 500,
-        headers: CORS_HEADERS,
+        headers,
       }
     );
   }
@@ -69,6 +88,12 @@ export async function PUT(request, { params }) {
 
 // GET: Fetch topic by ID
 export async function GET(request, { params }) {
+  const origin = request.headers.get("origin") || "";
+  const headers = {
+    ...getCORSHeaders(origin),
+    "Content-Type": "application/json",
+  };
+
   try {
     const { id } = params;
 
@@ -79,10 +104,7 @@ export async function GET(request, { params }) {
       JSON.stringify({ topic }),
       {
         status: 200,
-        headers: {
-          ...CORS_HEADERS,
-          "Content-Type": "application/json",
-        },
+        headers,
       }
     );
   } catch (error) {
@@ -90,7 +112,7 @@ export async function GET(request, { params }) {
       JSON.stringify({ error: error.message }),
       {
         status: 500,
-        headers: CORS_HEADERS,
+        headers,
       }
     );
   }

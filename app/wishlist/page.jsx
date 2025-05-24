@@ -5,7 +5,9 @@ import Link from "next/link";
 import { HiPencilAlt } from "react-icons/hi";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import RemoveBtn from "@/components/RemoveBtn";
-import { createContext, useContext } from 'react';
+import { createContext, useContext } from "react";
+import { useModalContext } from "@/components/ModalContext";
+import EditWishlistModal from "@/components/EditWishListModal";
 
 
 const TABS = ["Movies", "Series", "Anime", "Documentary"];
@@ -14,6 +16,7 @@ const MoviesPage = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("Movies");
+  const { isModalOpen, setIsModalOpen, editId, setEditId } = useModalContext();
 
   const fetchMovies = async () => {
     setLoading(true);
@@ -30,9 +33,7 @@ const MoviesPage = () => {
     fetchMovies();
   }, [activeTab]);
 
-
   return (
-
     <div className="w-full mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
         <h1 className="text-3xl font-bold">Wishlist</h1>
@@ -112,12 +113,20 @@ const MoviesPage = () => {
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <Link
+                  {/* <Link
                     href={`/wishlist/editWishlist/${t._id}`}
                     className="text-blue-600 hover:text-blue-800 transition"
                   >
                     <HiPencilAlt size={22} />
-                  </Link>
+                  </Link> */}
+                  <button
+                    onClick={() => {
+                      setEditId(t?._id);
+                    }}
+                    className="text-blue-600 hover:text-blue-800 transition"
+                  >
+                    <HiPencilAlt size={20} />
+                  </button>
                   <RemoveBtn
                     id={t._id}
                     fetchMovies={fetchMovies}
@@ -129,8 +138,10 @@ const MoviesPage = () => {
           ))}
         </div>
       )}
+      {editId && (
+        <EditWishlistModal id={editId} onClose={() => setEditId(null)} />
+      )}
     </div>
-
   );
 };
 
