@@ -14,8 +14,10 @@ export default function LoginPage() {
       body: JSON.stringify({ username, password }),
     });
 
+    console.log("logged in data", res);
+
     const data = await res.json();
-    console.log("logged in data", data);
+    
 
     if (data.token) {
       localStorage.setItem("token_next", data.token);
