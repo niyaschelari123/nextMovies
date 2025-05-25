@@ -121,7 +121,12 @@ export default function AddTopic() {
   const [languageArray, setLanguageArray] = useState([]);
   const [showDateModal, setShowDateModal] = useState(false);
   const [open, setOpen] = useState(false);
-  const token = localStorage.getItem("token_next");
+  const [token, setToken] = useState(null);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token_next");
+    setToken(storedToken);
+  }, []);
 
   const fetchLanguages = async () => {
     const options = {
