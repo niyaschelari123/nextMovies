@@ -43,29 +43,34 @@ export async function POST(request) {
 
   try {
     const data = await request.json();
-    console.log("Data received:", data);
+
+    // 🔐 Ensure watchedDate is a real Date
+    if (data.watchedDate && typeof data.watchedDate === "string") {
+      const parsedDate = new Date(data.watchedDate);
+      if (!isNaN(parsedDate)) {
+        data.watchedDate = parsedDate;
+      } else {
+        console.warn("Invalid date format, skipping watchedDate conversion.");
+        delete data.watchedDate; // Optional fallback
+      }
+    }
 
     await connectMongoDB();
-    await Topic.create(data);
+    const result = await Topic.create(data);
 
-    return new NextResponse(
-      JSON.stringify({ message: "Topic Created" }),
-      {
-        status: 201,
-        headers,
-      }
-    );
+    return new NextResponse(JSON.stringify({ message: "Topic Created", result }), {
+      status: 201,
+      headers,
+    });
   } catch (error) {
     console.error("Error creating topic:", error);
     return new NextResponse(
       JSON.stringify({ message: "Internal Server Error", error: error.message }),
-      {
-        status: 500,
-        headers,
-      }
+      { status: 500, headers }
     );
   }
 }
+
 
 // GET: Get topics with optional filters
 export async function GET(request) {

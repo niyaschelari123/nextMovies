@@ -15,7 +15,7 @@ const WatchHistoryPage = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totals, setTotals] = useState();
-  const limit = 24;
+  const limit = 120;
 
   const fetchMovies = async () => {
     setLoading(true);
@@ -44,14 +44,17 @@ const WatchHistoryPage = () => {
     fetchMovies();
   }, [activeTab, page]);
 
-  function formatWatchedDate(dateString) {
-    let date = dayjs(dateString, "YYYY-MM-DDTHH:mm", true);
-    if (!date.isValid()) {
-      date = dayjs(dateString, "DD/MM/YYYY, hh:mm:ss a", true);
-    }
-    if (!date.isValid()) return dateString || "";
-    return date.format("MM/DD/YYYY");
+function formatWatchedDate(dateString) {
+  let date = dayjs(dateString, "YYYY-MM-DDTHH:mm:ss.SSSZ", true);
+  if (!date.isValid()) {
+    date = dayjs(dateString, "DD/MM/YYYY, hh:mm:ss a", true);
   }
+  if (!date.isValid()) return dateString || "";
+  
+  // Format with date + 12-hour time + am/pm
+  return date.format("MM/DD/YYYY, hh:mm:ss a");
+}
+
 
   return (
     <div className="w-full mx-auto px-4 py-8">

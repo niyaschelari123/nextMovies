@@ -18,10 +18,14 @@ const MovieCarousel = () => {
   const { isModalOpen, setIsModalOpen, editId, setEditId } = useModalContext();
 
   useEffect(() => {
-    fetch("/api/topics?type=movies")
+    fetchMovies();
+  }, []);
+
+  const fetchMovies = async () => {
+    fetch("/api/topics?type=movies&page=1&limit=30")
       .then((res) => res.json())
       .then((data) => setMovies(data?.topics || []));
-  }, []);
+  };
 
   return (
     <div className="my-8 px-4">
@@ -83,18 +87,19 @@ const MovieCarousel = () => {
                   </Link> */}
                   <button
                     onClick={() => {
-                      setEditId(t?._id)}}
+                      setEditId(t?._id);
+                    }}
                     className="text-blue-600 hover:text-blue-800 transition"
                   >
                     <HiPencilAlt size={20} />
                   </button>
-                  <RemoveBtn id={t._id} />
+                  <RemoveBtn id={t._id} fetchMovies={fetchMovies} />
                 </div>
               </div>
             </div>
           </SwiperSlide>
         ))}
-         {/* {editId && (
+        {/* {editId && (
         <EditTopicModal id={editId} onClose={() => setEditId(null)} />
       )} */}
       </Swiper>

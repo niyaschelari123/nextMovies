@@ -15,11 +15,15 @@ const AnimeCarousel = () => {
   const [animes, setAnimes] = useState([]);
   const { isModalOpen, setIsModalOpen, editId, setEditId } = useModalContext();
 
-  useEffect(() => {
-    fetch("/api/topics?type=anime")
-      .then((res) => res.json())
-      .then((data) => setAnimes(data?.topics || []));
-  }, []);
+   useEffect(() => {
+      fetchMovies();
+    }, []);
+  
+    const fetchMovies = async () => {
+      fetch("/api/topics?type=anime&page=1&limit=30")
+        .then((res) => res.json())
+        .then((data) => setAnimes(data?.topics || []));
+    };
 
   return (
     <div className="my-10 px-4">
@@ -85,7 +89,7 @@ const AnimeCarousel = () => {
                   >
                     <HiPencilAlt size={20} />
                   </button>
-                  <RemoveBtn id={anime._id} />
+                  <RemoveBtn id={anime._id} fetchMovies={fetchMovies}/>
                 </div>
               </div>
             </div>

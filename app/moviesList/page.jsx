@@ -21,7 +21,7 @@ const MoviesPage = () => {
       params.append("search", searchTerm.trim());
     }
 
-    fetch(`/api/topics?${params.toString()}`)
+    fetch(`/api/topics?${params.toString()}&page=1&limit=500`)
       .then((res) => res.json())
       .then((data) => {
         setMovies(data?.topics || []);

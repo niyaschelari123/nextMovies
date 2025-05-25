@@ -15,11 +15,15 @@ const SeriesCarousel = () => {
   const [series, setSeries] = useState([]);
   const { isModalOpen, setIsModalOpen, editId, setEditId } = useModalContext();
 
-  useEffect(() => {
-    fetch("/api/topics?type=series")
-      .then((res) => res.json())
-      .then((data) => setSeries(data?.topics || []));
-  }, []);
+   useEffect(() => {
+      fetchMovies();
+    }, []);
+  
+    const fetchMovies = async () => {
+      fetch("/api/topics?type=series&page=1&limit=30")
+        .then((res) => res.json())
+        .then((data) => setSeries(data?.topics || []));
+    };
 
   return (
     <div className="my-8 px-4 py-6 rounded-lg">
@@ -87,7 +91,7 @@ const SeriesCarousel = () => {
                   >
                     <HiPencilAlt size={20} />
                   </button>
-                  <RemoveBtn id={t._id} />
+                  <RemoveBtn id={t._id} fetchMovies={fetchMovies} />
                 </div>
               </div>
             </div>

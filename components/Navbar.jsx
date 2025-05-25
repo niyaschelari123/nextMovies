@@ -30,6 +30,7 @@ export default function Navbar() {
           <Link href="/documentaryList" className="hover:text-blue-300 transition">Documentary</Link>
           <Link href="/wishlist" className="hover:text-blue-300 transition">Wishlist</Link>
           <Link href="/watchHistory" className="hover:text-blue-300 transition">Watch History</Link>
+          
           <Link
             href="/addTopic"
             className="bg-white text-slate-800 px-4 py-2 rounded hover:bg-gray-200 transition font-semibold"
@@ -48,6 +49,7 @@ export default function Navbar() {
           <Link href="/documentaryList" onClick={() => setMenuOpen(false)}>Documentary</Link>
           <Link href="/wishlist" onClick={() => setMenuOpen(false)}>Wishlist</Link>
           <Link href="/watchHistory" onClick={() => setMenuOpen(false)}>Watch History</Link>
+          <Link href="/firebaseMovies" className="hover:text-blue-300 transition">Firebase Movies</Link>
           <Link
             href="/addTopic"
             className="bg-white text-slate-800 px-4 py-2 rounded hover:bg-gray-200 transition font-semibold"

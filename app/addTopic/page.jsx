@@ -772,6 +772,8 @@ export default function AddTopic() {
                                   : null,
                               };
 
+                              console.log('values sent rrr', values)
+
                               const fireBaseValues = {
                                 ...values,
                                 images: [values.image],
@@ -787,6 +789,7 @@ export default function AddTopic() {
                               };
 
                               try {
+                            
                                 const res = await fetch("/api/topics", {
                                   method: "POST",
                                   headers: {
@@ -802,8 +805,7 @@ export default function AddTopic() {
                                     database,
                                     `${user_email}_col`
                                   );
-                                  await addDoc(value, fireBaseValues);
-                                  alert("enter");
+                              await addDoc(value, fireBaseValues);
                                   router.push("/");
                                 } else {
                                   throw new Error("Failed to add movie");

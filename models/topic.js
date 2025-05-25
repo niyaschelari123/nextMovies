@@ -8,7 +8,7 @@ const topicSchema = new Schema(
     language: String,
     genre: Array,
     image: String,
-    watchedDate: String,
+    watchedDate: Date,
   },
   {
     timestamps: true,
