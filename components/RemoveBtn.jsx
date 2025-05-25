@@ -17,7 +17,12 @@ export default function RemoveBtn({ id, fetchMovies, wishlist, name, year }) {
   const router = useRouter();
   const [firebaseData, setFirebaseData] = useState();
   const user_email = "niyaschelari@gmail.com";
-  const token = localStorage.getItem("token_next");
+  const [token, setToken] = useState(null);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token_next");
+    setToken(storedToken);
+  }, []);
 
   const fetchFromFireBase = async () => {
     let q;

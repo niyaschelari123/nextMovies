@@ -26,7 +26,7 @@ const MoviesPage = () => {
       params.append("search", searchTerm.trim());
     }
 
-    fetch(`/api/topics?${params.toString()}&&randomData=true`)
+    fetch(`/api/topics?${params.toString()}`)
       .then((res) => res.json())
       .then((data) => {
         setMovies(data?.topics || []);

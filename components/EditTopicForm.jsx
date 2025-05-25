@@ -82,7 +82,12 @@ export default function EditTopicForm({
   const [newImage, setNewImage] = useState(image);
   const [languageArray, setLanguageArray] = useState([]);
     const [open, setOpen] = useState(false);
-    const token = localStorage.getItem("token_next")
+    const [token, setToken] = useState(null);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token_next");
+    setToken(storedToken);
+  }, []);
 
   const fetchLanguages = async () => {
     const options = {
