@@ -50,6 +50,7 @@ export default function Navbar() {
           <Link href="/wishlist" onClick={() => setMenuOpen(false)}>Wishlist</Link>
           <Link href="/watchHistory" onClick={() => setMenuOpen(false)}>Watch History</Link>
           <Link href="/firebaseMovies" className="hover:text-blue-300 transition">Firebase Movies</Link>
+          <Link href="/login" className="hover:text-blue-300 transition">Login</Link>
           <Link
             href="/addTopic"
             className="bg-white text-slate-800 px-4 py-2 rounded hover:bg-gray-200 transition font-semibold"
