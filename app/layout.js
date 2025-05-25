@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import "./globals.css";
 import { Inter } from "next/font/google";
 import { ModalProvider } from "@/components/ModalContext";
+import AuthGate from "@/components/AuthGate";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -14,12 +15,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
+         <AuthGate>
         <div className="">
           <Navbar />
           <ModalProvider>
           <div className="mt-8 w-[91%] mx-auto">{children}</div>
           </ModalProvider>
         </div>
+        </AuthGate>
       </body>
     </html>
   );
