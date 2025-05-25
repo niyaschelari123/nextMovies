@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 
-const USERNAME = process.env.NEXT_PUBLIC_AUTH_USERNAME;
-const PASSWORD = process.env.NEXT_PUBLIC_AUTH_PASSWORD;
+const USERNAME = 'ortzak123';
+const PASSWORD = 'ortzak123';
 
 export default function AuthGate({ children }) {
   const [authorized, setAuthorized] = useState(false);
