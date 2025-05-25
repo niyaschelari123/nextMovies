@@ -20,7 +20,7 @@ const AnimeCarousel = () => {
     }, []);
   
     const fetchMovies = async () => {
-      fetch("/api/topics?type=anime&page=1&limit=30")
+      fetch("/api/topics?type=anime&page=1&limit=30&randomData=true")
         .then((res) => res.json())
         .then((data) => setAnimes(data?.topics || []));
     };

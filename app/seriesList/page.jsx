@@ -11,12 +11,20 @@ const SeriesPage = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 60;
+
   const searchTimeoutRef = useRef(null);
   const { isModalOpen, setIsModalOpen, editId, setEditId } = useModalContext();
 
-  const fetchMovies = async (searchTerm = "") => {
+  const fetchMovies = async (searchTerm = "", pageNumber = 1) => {
     setLoading(true);
-    const params = new URLSearchParams({ type: "series" });
+    const params = new URLSearchParams({
+      type: "series",
+      page: String(pageNumber),
+      limit: String(limit),
+    });
     if (searchTerm.trim()) {
       params.append("search", searchTerm.trim());
     }
@@ -25,35 +33,33 @@ const SeriesPage = () => {
       .then((res) => res.json())
       .then((data) => {
         setMovies(data?.topics || []);
+        setTotalPages(Math.ceil(data?.totalCount / limit) || 1);
         setLoading(false);
       })
       .catch(() => setLoading(false));
   };
 
-  // Debounce search input
   useEffect(() => {
     if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
     searchTimeoutRef.current = setTimeout(() => {
-      fetchMovies(search);
+      setPage(1);
+      fetchMovies(search, 1);
     }, 500);
 
     return () => clearTimeout(searchTimeoutRef.current);
   }, [search]);
 
-  // Initial fetch
   useEffect(() => {
-    fetchMovies();
-  }, []);
+    fetchMovies(search, page);
+  }, [page]);
 
   return (
     <div className="w-full mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">All Series</h1>
 
-        {/* Search box on right with icon */}
         <div className="relative max-w-sm w-full">
           <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-400">
-            {/* Search icon SVG */}
             <svg
               className="h-5 w-5"
               xmlns="http://www.w3.org/2000/svg"
@@ -88,63 +94,100 @@ const SeriesPage = () => {
           <p className="text-gray-500 text-lg">No Series Found.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6">
-          {movies.map((t) => (
-            <div
-              key={t._id}
-              className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-200 flex flex-col h-full"
-            >
-              <img
-                src={t.image}
-                alt={t.name}
-                className="w-full h-60 object-cover"
-              />
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6">
+            {movies.map((t) => (
+              <div
+                key={t._id}
+                className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-200 flex flex-col h-full"
+              >
+                <img
+                  src={t.image}
+                  alt={t.name}
+                  className="w-full h-60 object-cover"
+                />
 
-              <div className="p-4 flex-1 flex flex-col justify-between">
-                <div className="mb-4">
-                  <h2 className="text-xl font-bold text-gray-800 mb-1 capitalize">
-                    {t.name} ({t.year})
-                  </h2>
-                  <p className="text-sm text-gray-500 mb-2">
-                    {t.type} • {t.language}
-                  </p>
-                  <div className="flex flex-wrap gap-1 mb-3">
-                    {t.genre.map((g, idx) => (
-                      <span
-                        key={idx}
-                        className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full"
-                      >
-                        {g}
-                      </span>
-                    ))}
-                  </div>
-                  {t.description && (
-                    <p className="text-sm text-gray-700 line-clamp-3">
-                      {t.description}
+                <div className="p-4 flex-1 flex flex-col justify-between">
+                  <div className="mb-4">
+                    <h2 className="text-xl font-bold text-gray-800 mb-1 capitalize">
+                      {t.name} ({t.year})
+                    </h2>
+                    <p className="text-sm text-gray-500 mb-2">
+                      {t.type} • {t.language}
                     </p>
-                  )}
-                </div>
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {t.genre.map((g, idx) => (
+                        <span
+                          key={idx}
+                          className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full"
+                        >
+                          {g}
+                        </span>
+                      ))}
+                    </div>
+                    {t.description && (
+                      <p className="text-sm text-gray-700 line-clamp-3">
+                        {t.description}
+                      </p>
+                    )}
+                  </div>
 
-                <div className="flex justify-between items-center">
-                  {/* <Link
-                    href={`/editTopic/${t._id}`}
-                    className="text-blue-600 hover:text-blue-800 transition"
-                  >
-                    <HiPencilAlt size={22} />
-                  </Link> */}
-                  <button
-                    onClick={() => {
-                      setEditId(t?._id)}}
-                    className="text-blue-600 hover:text-blue-800 transition"
-                  >
-                    <HiPencilAlt size={20} />
-                  </button>
-                  <RemoveBtn id={t._id} fetchMovies={() => fetchMovies(search)} />
+                  <div className="flex justify-between items-center">
+                    <button
+                      onClick={() => {
+                        setEditId(t?._id);
+                      }}
+                      className="text-blue-600 hover:text-blue-800 transition"
+                    >
+                      <HiPencilAlt size={20} />
+                    </button>
+                    <RemoveBtn
+                      id={t._id}
+                      fetchMovies={() => fetchMovies(search, page)}
+                    />
+                  </div>
                 </div>
               </div>
+            ))}
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="flex justify-center gap-5 items-center mt-8">
+            <button
+              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+              disabled={page === 1}
+              className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+            >
+              Prev
+            </button>
+
+            <div className="flex items-center gap-2">
+              <span>Page</span>
+              <select
+                value={page}
+                onChange={(e) => setPage(Number(e.target.value))}
+                className="border px-3 py-1 rounded"
+              >
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (p) => (
+                    <option key={p} value={p}>
+                      {p}
+                    </option>
+                  )
+                )}
+              </select>
+              <span>of {totalPages}</span>
             </div>
-          ))}
-        </div>
+
+            <button
+              onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+              disabled={page === totalPages}
+              className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </>
       )}
       {editId && (
         <EditTopicModal id={editId} onClose={() => setEditId(null)} />

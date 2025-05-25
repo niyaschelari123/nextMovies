@@ -35,7 +35,7 @@ const MoviesPage = () => {
     q = query(
       collection(database, `${user_email}_col`),
       where("type", "==", activeTab),
-      limit(100)
+      // limit(100)
     );
 
     try {
@@ -74,7 +74,7 @@ const MoviesPage = () => {
       params.append("search", searchTerm.trim());
     }
 
-    fetch(`/api/topics?${params.toString()}&page=1&limit=100`)
+    fetch(`/api/topics?${params.toString()}&page=1&limit=1000`)
       .then((res) => res.json())
       .then((data) => {
         setMovies(data?.topics || []);
@@ -227,7 +227,7 @@ const MoviesPage = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6">
           {firebaseMovies.map((t) => {
             const isExist = movies?.find(
-              (item) => item?.name == t?.title && item?.year == t?.year
+              (item) => (item?.name)?.toLowerCase() == (t?.title)?.toLowerCase() && item?.year == t?.year
             );
             console.log('is exist value', isExist)
             if (!isExist)

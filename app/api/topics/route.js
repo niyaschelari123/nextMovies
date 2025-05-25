@@ -90,6 +90,7 @@ export async function GET(request) {
     const skip = (page - 1) * limit;
     const sortByDate = searchParams.get("sortByDate") === "true";
     const search = searchParams.get("search");
+    const randomData = searchParams.get("randomData") === "true";
 
     const query = {};
     if (type) query.type = type;
@@ -97,13 +98,28 @@ export async function GET(request) {
       query.name = { $regex: search, $options: "i" };
     }
 
+    if (randomData) {
+      // Use MongoDB aggregation to randomly sample documents
+      const matchStage = Object.keys(query).length ? [{ $match: query }] : [];
+      const pipeline = [
+        ...matchStage,
+        { $sample: { size: limit } },
+      ];
+
+      const topics = await Topic.aggregate(pipeline);
+      return new NextResponse(
+        JSON.stringify({ topics, total: topics.length, totalPages: 1 }),
+        {
+          status: 200,
+          headers,
+        }
+      );
+    }
+
     const sortOption = sortByDate ? { watchedDate: -1 } : {};
 
     const [topics, total] = await Promise.all([
-      Topic.find(query)
-        .sort(sortOption)
-        .skip(skip)
-        .limit(limit),
+      Topic.find(query).sort(sortOption).skip(skip).limit(limit),
       Topic.countDocuments(query),
     ]);
 
@@ -127,6 +143,7 @@ export async function GET(request) {
     );
   }
 }
+
 
 // DELETE: Delete a topic by ID
 export async function DELETE(request) {

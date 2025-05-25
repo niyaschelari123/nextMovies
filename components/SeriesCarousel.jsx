@@ -20,7 +20,7 @@ const SeriesCarousel = () => {
     }, []);
   
     const fetchMovies = async () => {
-      fetch("/api/topics?type=series&page=1&limit=30")
+      fetch("/api/topics?type=series&page=1&limit=30&randomData=true")
         .then((res) => res.json())
         .then((data) => setSeries(data?.topics || []));
     };
