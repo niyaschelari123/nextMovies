@@ -16,6 +16,7 @@ const MovieCarousel = () => {
   const [movies, setMovies] = useState([]);
   // const [editId, setEditId] = useState(null);
   const { isModalOpen, setIsModalOpen, editId, setEditId } = useModalContext();
+  const token = localStorage.getItem("token_next");
 
   useEffect(() => {
     fetchMovies();

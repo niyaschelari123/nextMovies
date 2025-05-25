@@ -1,3 +1,4 @@
+import { verifyToken } from "@/lib/auth";
 import connectMongoDB from "@/libs/mongodb";
 import Topic from "@/models/topic";
 import { NextResponse } from "next/server";
@@ -42,6 +43,7 @@ export async function POST(request) {
   };
 
   try {
+    verifyToken(request); // will throw error if token is invalid
     const data = await request.json();
 
     // 🔐 Ensure watchedDate is a real Date
@@ -154,6 +156,7 @@ export async function DELETE(request) {
   };
 
   try {
+    verifyToken(request); // will throw error if token is invalid
     const id = request.nextUrl.searchParams.get("id");
     if (!id) {
       return new NextResponse(

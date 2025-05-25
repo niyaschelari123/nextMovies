@@ -121,6 +121,7 @@ export default function AddTopic() {
   const [languageArray, setLanguageArray] = useState([]);
   const [showDateModal, setShowDateModal] = useState(false);
   const [open, setOpen] = useState(false);
+  const token = localStorage.getItem("token_next");
 
   const fetchLanguages = async () => {
     const options = {
@@ -179,7 +180,7 @@ export default function AddTopic() {
     try {
       if (!override) {
         const checkRes = await fetch(
-          `http://localhost:3000/api/topics/check?name=${encodeURIComponent(
+          `/api/topics/check?name=${encodeURIComponent(
             name
           )}&year=${year}`
         );
@@ -217,9 +218,12 @@ export default function AddTopic() {
 
       console.log("firebase values are", fireBaseValues);
 
-      const res = await fetch("http://localhost:3000/api/topics", {
+      const res = await fetch("/api/topics", {
         method: "POST",
-        headers: { "Content-type": "application/json" },
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           name: name.toLowerCase(),
           year,
@@ -234,7 +238,7 @@ export default function AddTopic() {
       if (res.ok) {
         await addDoc(value, fireBaseValues);
         alert("Show Added Successfully");
-        router.push('/watchHistory');
+        router.push("/watchHistory");
       } else {
         throw new Error("Failed to add movie");
       }
@@ -305,10 +309,11 @@ export default function AddTopic() {
     console.log("firebase values are", fireBaseValues);
 
     try {
-      const res = await fetch("http://localhost:3000/api/topics", {
+      const res = await fetch("/api/topics", {
         method: "POST",
-        headers: { "Content-type": "application/json" },
+        headers: { "Content-type": "application/json",Authorization: `Bearer ${token}` },
         body: JSON.stringify(values),
+        
       });
 
       if (res.ok) {
@@ -553,34 +558,34 @@ export default function AddTopic() {
             ))}
           </div> */}
           <div className="border rounded-md mb-4">
-      {/* Header */}
-      <div
-        className="flex justify-between items-center px-4 py-2 bg-slate-100 cursor-pointer"
-        onClick={() => setOpen(!open)}
-      >
-        <div className="flex items-center gap-2 font-medium">
-          <ListCollapse size={18} />
-          <span>Select Genres</span>
-        </div>
-        {open ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-      </div>
+            {/* Header */}
+            <div
+              className="flex justify-between items-center px-4 py-2 bg-slate-100 cursor-pointer"
+              onClick={() => setOpen(!open)}
+            >
+              <div className="flex items-center gap-2 font-medium">
+                <ListCollapse size={18} />
+                <span>Select Genres</span>
+              </div>
+              {open ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            </div>
 
-      {/* Collapsible Content */}
-      {open && (
-        <div className="p-4 flex flex-wrap gap-2">
-          {genreOptions.map((g) => (
-            <label key={g} className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={genre.includes(g)}
-                onChange={() => handleGenreChange(g)}
-              />
-              <span>{g}</span>
-            </label>
-          ))}
-        </div>
-      )}
-    </div>
+            {/* Collapsible Content */}
+            {open && (
+              <div className="p-4 flex flex-wrap gap-2">
+                {genreOptions.map((g) => (
+                  <label key={g} className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={genre.includes(g)}
+                      onChange={() => handleGenreChange(g)}
+                    />
+                    <span>{g}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <input
@@ -668,7 +673,7 @@ export default function AddTopic() {
                           onClick={async () => {
                             setSelectedCard(movie);
                             const checkRes = await fetch(
-                              `http://localhost:3000/api/topics/check?name=${encodeURIComponent(
+                              `/api/topics/check?name=${encodeURIComponent(
                                 name
                               )}&year=${year}`
                             );
@@ -772,7 +777,7 @@ export default function AddTopic() {
                                   : null,
                               };
 
-                              console.log('values sent rrr', values)
+                              console.log("values sent rrr", values);
 
                               const fireBaseValues = {
                                 ...values,
@@ -789,11 +794,11 @@ export default function AddTopic() {
                               };
 
                               try {
-                            
                                 const res = await fetch("/api/topics", {
                                   method: "POST",
                                   headers: {
                                     "Content-type": "application/json",
+                                    Authorization: `Bearer ${token}`
                                   },
                                   body: JSON.stringify(values),
                                 });
@@ -805,7 +810,7 @@ export default function AddTopic() {
                                     database,
                                     `${user_email}_col`
                                   );
-                              await addDoc(value, fireBaseValues);
+                                  await addDoc(value, fireBaseValues);
                                   router.push("/");
                                 } else {
                                   throw new Error("Failed to add movie");

@@ -3,13 +3,21 @@
 import { HiOutlineTrash } from "react-icons/hi";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { collection, deleteDoc, doc, getDocs, query, where } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import { database } from "@/firebase";
 
 export default function RemoveBtn({ id, fetchMovies, wishlist, name, year }) {
   const router = useRouter();
   const [firebaseData, setFirebaseData] = useState();
   const user_email = "niyaschelari@gmail.com";
+  const token = localStorage.getItem("token_next");
 
   const fetchFromFireBase = async () => {
     let q;
@@ -79,13 +87,13 @@ export default function RemoveBtn({ id, fetchMovies, wishlist, name, year }) {
         } catch (error) {
           console.error("Error deleting document:", error);
         }
-        res = await fetch(`http://localhost:3000/api/topics?id=${id}`, {
+        res = await fetch(`/api/topics?id=${id}`, {
           method: "DELETE",
+
+          headers: { Authorization: `Bearer ${token}` },
         });
-       
       } else {
-        
-        res = await fetch(`http://localhost:3000/api/wishlist?id=${id}`, {
+        res = await fetch(`/api/wishlist?id=${id}`, {
           method: "DELETE",
         });
       }

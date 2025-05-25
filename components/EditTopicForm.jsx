@@ -82,6 +82,7 @@ export default function EditTopicForm({
   const [newImage, setNewImage] = useState(image);
   const [languageArray, setLanguageArray] = useState([]);
     const [open, setOpen] = useState(false);
+    const token = localStorage.getItem("token_next")
 
   const fetchLanguages = async () => {
     const options = {
@@ -224,10 +225,11 @@ export default function EditTopicForm({
       
 
     try {
-      const res = await fetch(`http://localhost:3000/api/topics/${id}`, {
+      const res = await fetch(`/api/topics/${id}`, {
         method: "PUT",
         headers: {
           "Content-type": "application/json",
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
           name: newName?.toLowerCase(),

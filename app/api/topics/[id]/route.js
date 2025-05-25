@@ -18,6 +18,7 @@
 // }
 
 
+import { verifyToken } from "@/lib/auth";
 import connectMongoDB from "@/libs/mongodb";
 import Topic from "@/models/topic";
 import { NextResponse } from "next/server";
@@ -62,6 +63,7 @@ export async function PUT(request, { params }) {
   };
 
   try {
+    verifyToken(request); // will throw error if token is invalid
     const { id } = params;
     const data = await request.json();
 
