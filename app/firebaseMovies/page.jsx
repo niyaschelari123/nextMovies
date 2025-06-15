@@ -27,6 +27,12 @@ const MoviesPage = () => {
   const { isModalOpen, setIsModalOpen, editId, setEditId } = useModalContext();
   const router = useRouter();
   console.log('firebase movies', firebaseMovies,movies)
+  const [token, setToken] = useState(null);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token_next");
+    setToken(storedToken);
+  }, []);
 
   const fetchSeries = async () => {
     let q;
@@ -157,7 +163,10 @@ const MoviesPage = () => {
     const user_email = "niyaschelari@gmail.com";
     await fetch("/api/topics", {
       method: "POST",
-      headers: { "Content-type": "application/json" },
+       headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       body: JSON.stringify(values),
     });
 

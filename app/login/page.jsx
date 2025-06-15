@@ -14,15 +14,18 @@ export default function LoginPage() {
       body: JSON.stringify({ username, password }),
     });
 
-    console.log("logged in data", res);
+    
 
     const data = await res.json();
-    
+    console.log("logged in data", data);
+    if(data?.user?.name){
+      localStorage.setItem('next_movies_user', data?.user?.name)
+    }
 
     if (data.token) {
       localStorage.setItem("token_next", data.token);
       document.cookie = `token=${data.token}; path=/`;
-      router.push("/dashboard");
+      router.push("/");
     } else {
       alert(data.error);
     }

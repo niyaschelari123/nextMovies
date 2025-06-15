@@ -36,11 +36,17 @@ const valid = user.password == password;
     });
   }
 
-  const token = jwt.sign({ username }, process.env.JWT_SECRET, {
+    // Include `name` in JWT and response
+  const payload = {
+    username: user.username,
+    name: user.name
+  };
+
+  const token = jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: "7d"
   });
 
-  return new Response(JSON.stringify({ token }), {
+  return new Response(JSON.stringify({ token, user }), {
     status: 200,
     headers
   });
